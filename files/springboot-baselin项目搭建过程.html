@@ -1,0 +1,572 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>springboot-baselin项目搭建过程</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><p></p><div class="toc"><h3>springboot-baseline项目搭建</h3><ul><li><a href="#springboot_2">一.使用springboot快速搭建一个项目</a></li><li><a href="#_6">二.项目搭建前的软件准备和注意事项</a></li><ul><li><a href="#1_7">1.软件准备</a></li><li><a href="#2_13">2.注意事项</a></li></ul><li><a href="#_26">三.新建项目</a></li><ul><li><a href="#1springboot_27">1.新建springboot项目</a></li><li><a href="#2pom_123">2.修改pom文件，添加自己需要的依赖</a></li><li><a href="#3logback_163">3.添加logback日志输出</a></li><li><a href="#4springboot_220">4.修改springboot配置文件</a></li><li><a href="#5_255">5.建立完成后的项目结构</a></li><li><a href="#6_402">6.注意事项</a></li></ul><li><a href="#_407">四.项目内部结构，分包规则</a></li><ul><li><a href="#1_408">1.数据储存层</a></li><li><a href="#2_450">2.数据访问层</a></li><li><a href="#3_467">3.业务逻辑层</a></li><li><a href="#4web_515">4.web展现层</a></li><li><a href="#5_565">5.页面文件</a></li></ul><li><a href="#_574">五.小结</a></li><ul><li><a href="#1_577">1.搭建完成后的项目结构：</a></li><li><a href="#2_579">2.源码下载</a></li></ul></ul></div><p></p>
+<h1><a id="springboot_2"></a>一.使用springboot快速搭建一个项目</h1>
+<p>此篇文章将给公司人员展示该如何建立一个springboot的标准项目，并且会标注出项目的结构以及需要注意的事项。</p>
+<h1><a id="_6"></a>二.项目搭建前的软件准备和注意事项</h1>
+<h2><a id="1_7"></a>1.软件准备</h2>
+<ol>
+<li>jdk版本	1.8</li>
+<li>开发工具	eclipse  版本2018-09</li>
+<li>maven	版本3.6.0（阿里云仓库）</li>
+</ol>
+<h2><a id="2_13"></a>2.注意事项</h2>
+<p>该注意事项适用于<strong>首次打开</strong>eclipse工作空间，或未配置过eclipse相关设置的情况，配置均为eclipse默认值。</p>
+<ol>
+<li>Window-Preferences-General-Content Types选项，将Text的Defaultencoding属性更改为UTF-8。<br>
+<img src="https://img-blog.csdnimg.cn/20190119094637722.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2V2ZW5lcm8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></li>
+<li>注意，按照第1点修改之后，properties文件仍然是ISO-8859-1的编码格式，需要单独再修改成为UTF-8。<br>
+<img src="https://img-blog.csdnimg.cn/20190119094742593.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2V2ZW5lcm8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></li>
+<li>Window-Preferences-General-Workspace选项，将Text file encoding值修改为UTF-8（默认为GBK），New text file line delimiter值修改为UNIX（默认为Windows）。<br>
+<img src="https://img-blog.csdnimg.cn/20190119094758171.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2V2ZW5lcm8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述">完成配置的修改之后点击Apply And Close应用并关闭,项目搭建前的注意事项说明完毕，现在开始正式搭建springboot项目。</li>
+</ol>
+<p><strong>注</strong>：</p>
+<ol>
+<li>为了更好的兼容springboot项目，建议在eclipse商店中搜索安装<strong>Spring Tool 4</strong>插件（将使用安装了该插件的eclipse进行演示，具体安装方式不再赘述）。</li>
+<li>maven配置建议使用阿里云仓库，公司maven仓库的更新速度较慢并且jar包并不全面，可能会缺少springboot需要的jar包，因此推荐使用阿里云仓库。</li>
+</ol>
+<h1><a id="_26"></a>三.新建项目</h1>
+<h2><a id="1springboot_27"></a>1.新建springboot项目</h2>
+<ol>
+<li>在项目栏空白处右键-New-Project，在跳出的对话框中输入spring，选择Spring Starter Project。<br>
+<img src="https://img-blog.csdnimg.cn/20190119103718249.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2V2ZW5lcm8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></li>
+<li>点击Next，自行修改相应属性，<strong>Service URL选项保持为https://start.spring.io不要进行改动</strong>，需要注意的是<strong>Packging</strong>属性，该属性是决定项目编译出来是<strong>jar</strong>文件还是<strong>war</strong>文件，我这里选择的是<strong>jar</strong>，原因如下：<br>
+①.Packging为<strong>jar</strong>时，编译出来只有一个<strong>xxx.jar</strong>文件，单个<strong>jar</strong>文件的<strong>优势是不需要依赖任何第三方容器</strong>如Tomcat，仅仅需要同级别的javaSE环境即可运行，但是这样的<strong>缺陷是每次更新是需要整包更新的</strong>。<br>
+②.Packging为<strong>war</strong>时，编译出来是<strong>xxx.war</strong>文件，也就是传统Tomcat使用的文件，需要依赖Tomcat容器和java环境才可运行。<br>
+③.以上是我使用springboot做项目时得出的结论，至于具体选择哪个，看你怎么进行选择了。<br>
+<img src="https://img-blog.csdnimg.cn/20190119103734790.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2V2ZW5lcm8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></li>
+<li>选择好之后继续点击Next，选择要创建的springboot的版本，选择你需要集成的依赖，如mybatis和spring cloud组件等，按需选择，选择好之后点击Finish，eclipse会帮你开始初始化springboot项目，等待初始化完毕。<br>
+<img src="https://img-blog.csdnimg.cn/20190119103804212.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2V2ZW5lcm8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><img src="https://img-blog.csdnimg.cn/20190119103814815.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2V2ZW5lcm8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></li>
+<li>新建好之后，项目结构应该是这样的：<br>
+<img src="https://img-blog.csdnimg.cn/20190119104708691.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2V2ZW5lcm8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></li>
+<li>其中，SpringbootBaselineApplication.java是项目启动的主类，application.properties是springboot的配置文件，pom文件源码如下，到此springboot项目搭建完成，可以直接运行了。</li>
+</ol>
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+	&lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+	&lt;parent&gt;
+		&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+		&lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+		&lt;version&gt;2.2.0.BUILD-SNAPSHOT&lt;/version&gt;
+		&lt;relativePath/&gt; &lt;!-- lookup parent from repository --&gt;
+	&lt;/parent&gt;
+	&lt;groupId&gt;com.ucmed&lt;/groupId&gt;
+	&lt;artifactId&gt;springboot-baseline&lt;/artifactId&gt;
+	&lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;
+	&lt;name&gt;springboot-baseline&lt;/name&gt;
+	&lt;description&gt;卓健springboot-baseline示例项目&lt;/description&gt;
+
+	&lt;properties&gt;
+		&lt;java.version&gt;1.8&lt;/java.version&gt;
+	&lt;/properties&gt;
+
+	&lt;dependencies&gt;
+		&lt;dependency&gt;
+			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+			&lt;artifactId&gt;spring-boot-starter-thymeleaf&lt;/artifactId&gt;
+		&lt;/dependency&gt;
+		&lt;dependency&gt;
+			&lt;groupId&gt;org.mybatis.spring.boot&lt;/groupId&gt;
+			&lt;artifactId&gt;mybatis-spring-boot-starter&lt;/artifactId&gt;
+			&lt;version&gt;1.3.2&lt;/version&gt;
+		&lt;/dependency&gt;
+
+		&lt;dependency&gt;
+			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+			&lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;
+			&lt;scope&gt;test&lt;/scope&gt;
+		&lt;/dependency&gt;
+	&lt;/dependencies&gt;
+
+	&lt;build&gt;
+		&lt;plugins&gt;
+			&lt;plugin&gt;
+				&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+				&lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+			&lt;/plugin&gt;
+		&lt;/plugins&gt;
+	&lt;/build&gt;
+
+	&lt;repositories&gt;
+		&lt;repository&gt;
+			&lt;id&gt;spring-snapshots&lt;/id&gt;
+			&lt;name&gt;Spring Snapshots&lt;/name&gt;
+			&lt;url&gt;https://repo.spring.io/snapshot&lt;/url&gt;
+			&lt;snapshots&gt;
+				&lt;enabled&gt;true&lt;/enabled&gt;
+			&lt;/snapshots&gt;
+		&lt;/repository&gt;
+		&lt;repository&gt;
+			&lt;id&gt;spring-milestones&lt;/id&gt;
+			&lt;name&gt;Spring Milestones&lt;/name&gt;
+			&lt;url&gt;https://repo.spring.io/milestone&lt;/url&gt;
+		&lt;/repository&gt;
+	&lt;/repositories&gt;
+	&lt;pluginRepositories&gt;
+		&lt;pluginRepository&gt;
+			&lt;id&gt;spring-snapshots&lt;/id&gt;
+			&lt;name&gt;Spring Snapshots&lt;/name&gt;
+			&lt;url&gt;https://repo.spring.io/snapshot&lt;/url&gt;
+			&lt;snapshots&gt;
+				&lt;enabled&gt;true&lt;/enabled&gt;
+			&lt;/snapshots&gt;
+		&lt;/pluginRepository&gt;
+		&lt;pluginRepository&gt;
+			&lt;id&gt;spring-milestones&lt;/id&gt;
+			&lt;name&gt;Spring Milestones&lt;/name&gt;
+			&lt;url&gt;https://repo.spring.io/milestone&lt;/url&gt;
+		&lt;/pluginRepository&gt;
+	&lt;/pluginRepositories&gt;
+
+&lt;/project&gt;
+</code></pre>
+<h2><a id="2pom_123"></a>2.修改pom文件，添加自己需要的依赖</h2>
+<ol>
+<li>指定编码格式：</li>
+</ol>
+<pre><code>&lt;properties&gt;
+	&lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+	&lt;project.reporting.outputEncoding&gt;UTF-8&lt;/project.reporting.outputEncoding&gt;
+	&lt;java.version&gt;1.8&lt;/java.version&gt;
+&lt;/properties&gt;
+</code></pre>
+<ol start="2">
+<li>添加dev-tools依赖（dev-tools是什么以及有什么用自行百度）</li>
+</ol>
+<pre><code>&lt;dependency&gt;
+	&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+	&lt;artifactId&gt;spring-boot-devtools&lt;/artifactId&gt;
+	&lt;optional&gt;true&lt;/optional&gt;
+&lt;/dependency&gt;
+</code></pre>
+<ol start="3">
+<li>移除tomcat依赖，新增undertow依赖（<strong>使用undertow容器的话，切记要将tomcat依赖给移除掉，不然仍然会以tomcat作为容器启动的，如果你需要使用tomcat作为容器，那你可以忽略这一条</strong>）</li>
+</ol>
+<pre><code>&lt;dependency&gt;
+	&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+	&lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+	&lt;!-- 从依赖信息里移除 Tomcat配置 --&gt;
+	&lt;exclusions&gt; 
+		&lt;exclusion&gt;
+			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+			&lt;artifactId&gt;spring-boot-starter-tomcat&lt;/artifactId&gt;
+		&lt;/exclusion&gt;
+	&lt;/exclusions&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+	&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+	&lt;artifactId&gt;spring-boot-starter-undertow&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre>
+<ol start="4">
+<li>其他的就是平时使用的类（例如数据库连接类），自行添加，<strong>建议做项目时遇到缺少的再添加，避免pom文件出现很多无用的依赖</strong>，导致项目臃肿。</li>
+</ol>
+<h2><a id="3logback_163"></a>3.添加logback日志输出</h2>
+<p>spring boot内部使用Commons Logging来记录日志，但也保留外部接口可以让一些日志框架来进行实现，例如Java Util Logging,Log4J2还有Logback。如果你想用某一种日志框架来进行实现的话，就必须先配置，默认情况下，spring boot使用Logback作为日志实现的框架。（我这也使用logback作为日志输出框架）</p>
+<ol>
+<li>springboot已经集成了logback，并且默认使用的就是此日志框架，因此不用额外添加依赖，直接将logback的配置文件放到resource目录下即可。logback-spring.xml文件内容如下：</li>
+</ol>
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;configuration debug="false"&gt;
+    &lt;!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径--&gt;
+    &lt;property name="LOG_HOME" value="/logs" /&gt;
+    &lt;!-- 控制台输出 --&gt;
+    &lt;appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender"&gt;
+        &lt;encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder"&gt;
+            &lt;!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度,%line:行号,%msg：日志消息，%n是换行符--&gt;
+            &lt;pattern&gt;%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} Line:%line ----&gt; %msg%n&lt;/pattern&gt;
+            &lt;charset&gt;UTF-8&lt;/charset&gt;
+        &lt;/encoder&gt;
+    &lt;/appender&gt;
+    &lt;!-- 按照每天生成日志文件 --&gt;
+    &lt;!-- RollingFileAppender：滚动记录文件，先将日志记录到指定文件，当符合某个条件时，将日志记录到其他文件 --&gt;
+    &lt;!-- 以下的大概意思是：1.先按日期存日志，日期变了，将前一天的日志文件名重命名为XXX%日期%索引，新的日志仍然是demo.log --&gt;
+    &lt;appender name="FILE"  class="ch.qos.logback.core.rolling.RollingFileAppender"&gt;
+     	&lt;filter class="ch.qos.logback.classic.filter.ThresholdFilter"&gt;
+        	&lt;level&gt;INFO&lt;/level&gt;
+    	&lt;/filter&gt;
+    	&lt;File&gt;${user.home}/logs/defult.log&lt;/File&gt;
+        &lt;!-- rollingPolicy:当发生滚动时，决定 RollingFileAppender 的行为，涉及文件移动和重命名。 --&gt;
+        &lt;!-- TimeBasedRollingPolicy： 最常用的滚动策略，它根据时间来制定滚动策略，既负责滚动也负责出发滚动 --&gt;
+        &lt;rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"&gt;
+            &lt;!--日志文件输出的文件名--&gt;
+            &lt;FileNamePattern&gt;${user.home}/logs/defult.%d{yyyy-MM-dd}.log&lt;/FileNamePattern&gt;
+            &lt;!--日志文件保留天数--&gt;
+            &lt;MaxHistory&gt;90&lt;/MaxHistory&gt;
+        &lt;/rollingPolicy&gt;
+        &lt;encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder"&gt;
+           &lt;pattern&gt;%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} Line:%line ----&gt;  %msg%n&lt;/pattern&gt; 
+            &lt;!-- 记录日志的编码:此处设置字符集 - --&gt;
+            &lt;charset&gt;UTF-8&lt;/charset&gt;
+        &lt;/encoder&gt;
+    &lt;/appender&gt;
+
+    &lt;!--myibatis log configure--&gt;
+    &lt;logger name="com.apache.ibatis" level="TRACE"/&gt;
+    &lt;logger name="java.sql.Connection" level="DEBUG"/&gt;
+    &lt;logger name="java.sql.Statement" level="DEBUG"/&gt;
+    &lt;logger name="java.sql.PreparedStatement" level="DEBUG"/&gt;
+
+    &lt;!-- 日志输出级别 --&gt;
+    &lt;root level="INFO"&gt;
+    	&lt;!-- 输出控制台 --&gt;
+     	&lt;appender-ref ref="STDOUT" /&gt;
+     	&lt;!-- 输出文件 --&gt;
+        &lt;appender-ref ref="FILE" /&gt;
+    &lt;/root&gt;
+
+&lt;/configuration&gt;
+</code></pre>
+<h2><a id="4springboot_220"></a>4.修改springboot配置文件</h2>
+<p>springboot除了能够识别properties的配置文件之外，还能够识别一种后缀为yml的配置文件，两者的差别在于写法，实质上并没有不同，读取数据的方式也是一样，以下放出对比，自己选择需要使用的方式。<br>
+<strong>properties配置文件</strong></p>
+<pre><code>server.port=16660
+spring.datasource.driverClassName=com.mysql.cj.jdbc.Driver
+spring.datasource.url: jdbc:mysql://127.0.0.1:3306/xxx?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=CONVERT_TO_NULL
+spring.datasource.username: root
+spring.datasource.password: 123456
+redis.host=127.0.0.1
+redis.port=6379
+redis.timeout=30000
+</code></pre>
+<p><strong>yml配置文件</strong></p>
+<pre><code>server:
+  port: 16660
+
+spring:
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/xxx?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=CONVERT_TO_NULL
+    username: root
+    password: 123456
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    timeout: 30000
+</code></pre>
+<ol>
+<li>添加你需要添加的配置，如web监听端口，数据库连接配置等。</li>
+<li>配置完成后，可以尝试启动一下项目，现在是可以正常运行了。</li>
+<li>项目启动显示<code>Undertow started on port(s) 16660 (http) with context path ''</code>、<code>Started SpringbootBaselineApplication in 3.352 seconds (JVM running for 5.107)</code>并且无错误抛出时，这说明项目正常启动了。<img src="https://img-blog.csdnimg.cn/20190123110500496.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2V2ZW5lcm8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></li>
+</ol>
+<h2><a id="5_255"></a>5.建立完成后的项目结构</h2>
+<ol>
+<li><strong>整个项目搭建完成后，项目结构如下：</strong><img src="https://img-blog.csdnimg.cn/20190123104122221.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2V2ZW5lcm8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></li>
+<li><strong>pom文件内容如下:</strong></li>
+</ol>
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+	&lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+	&lt;parent&gt;
+		&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+		&lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+		&lt;version&gt;2.2.0.BUILD-SNAPSHOT&lt;/version&gt;
+		&lt;relativePath/&gt; &lt;!-- lookup parent from repository --&gt;
+	&lt;/parent&gt;
+	&lt;groupId&gt;com.ucmed&lt;/groupId&gt;
+	&lt;artifactId&gt;springboot-baseline&lt;/artifactId&gt;
+	&lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;
+	&lt;name&gt;springboot-baseline&lt;/name&gt;
+	&lt;description&gt;卓健springboot-baseline示例项目&lt;/description&gt;
+
+	&lt;properties&gt;
+		&lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+		&lt;project.reporting.outputEncoding&gt;UTF-8&lt;/project.reporting.outputEncoding&gt;
+		&lt;java.version&gt;1.8&lt;/java.version&gt;
+		&lt;!--指定main入口--&gt;
+		&lt;start-class&gt;com.ucmed.SpringbootBaselineApplication&lt;/start-class&gt;
+	&lt;/properties&gt;
+
+	&lt;dependencies&gt;
+		&lt;!-- springboot组件 --&gt;
+		&lt;dependency&gt;
+			&lt;groupId&gt;org.mybatis.spring.boot&lt;/groupId&gt;
+			&lt;artifactId&gt;mybatis-spring-boot-starter&lt;/artifactId&gt;
+			&lt;version&gt;1.3.2&lt;/version&gt;
+		&lt;/dependency&gt;
+		&lt;dependency&gt;
+			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+			&lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+			&lt;!-- 从依赖信息里移除 Tomcat配置 --&gt;
+			&lt;exclusions&gt; 
+				&lt;exclusion&gt;
+					&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+					&lt;artifactId&gt;spring-boot-starter-tomcat&lt;/artifactId&gt;
+				&lt;/exclusion&gt;
+			&lt;/exclusions&gt;
+		&lt;/dependency&gt;
+		&lt;dependency&gt;
+			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+			&lt;artifactId&gt;spring-boot-starter-undertow&lt;/artifactId&gt;
+		&lt;/dependency&gt;
+		&lt;dependency&gt;
+			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+			&lt;artifactId&gt;spring-boot-starter-thymeleaf&lt;/artifactId&gt;
+		&lt;/dependency&gt;
+		&lt;dependency&gt;
+			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+			&lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;
+			&lt;scope&gt;test&lt;/scope&gt;
+		&lt;/dependency&gt;
+		&lt;dependency&gt;
+			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+			&lt;artifactId&gt;spring-boot-starter-data-redis&lt;/artifactId&gt;
+		&lt;/dependency&gt;
+	&lt;!-- 数据库依赖 --&gt;
+	&lt;dependency&gt;
+		&lt;groupId&gt;mysql&lt;/groupId&gt;
+		&lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
+		&lt;scope&gt;runtime&lt;/scope&gt;
+	&lt;/dependency&gt;
+	&lt;/dependencies&gt;
+
+	&lt;build&gt;
+		&lt;plugins&gt;
+			&lt;plugin&gt;
+				&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+				&lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+			&lt;/plugin&gt;
+		&lt;/plugins&gt;
+	&lt;/build&gt;
+
+	&lt;repositories&gt;
+		&lt;repository&gt;
+			&lt;id&gt;spring-snapshots&lt;/id&gt;
+			&lt;name&gt;Spring Snapshots&lt;/name&gt;
+			&lt;url&gt;https://repo.spring.io/snapshot&lt;/url&gt;
+			&lt;snapshots&gt;
+				&lt;enabled&gt;true&lt;/enabled&gt;
+			&lt;/snapshots&gt;
+		&lt;/repository&gt;
+		&lt;repository&gt;
+			&lt;id&gt;spring-milestones&lt;/id&gt;
+			&lt;name&gt;Spring Milestones&lt;/name&gt;
+			&lt;url&gt;https://repo.spring.io/milestone&lt;/url&gt;
+		&lt;/repository&gt;
+	&lt;/repositories&gt;
+	&lt;pluginRepositories&gt;
+		&lt;pluginRepository&gt;
+			&lt;id&gt;spring-snapshots&lt;/id&gt;
+			&lt;name&gt;Spring Snapshots&lt;/name&gt;
+			&lt;url&gt;https://repo.spring.io/snapshot&lt;/url&gt;
+			&lt;snapshots&gt;
+				&lt;enabled&gt;true&lt;/enabled&gt;
+			&lt;/snapshots&gt;
+		&lt;/pluginRepository&gt;
+		&lt;pluginRepository&gt;
+			&lt;id&gt;spring-milestones&lt;/id&gt;
+			&lt;name&gt;Spring Milestones&lt;/name&gt;
+			&lt;url&gt;https://repo.spring.io/milestone&lt;/url&gt;
+		&lt;/pluginRepository&gt;
+	&lt;/pluginRepositories&gt;
+
+&lt;/project&gt;
+
+</code></pre>
+<ol>
+<li><strong>application配置文件如下：</strong></li>
+</ol>
+<pre><code>spring:
+  profiles:
+    active: zwjk
+</code></pre>
+<ol start="2">
+<li><strong>application-zwjk配置文件如下：</strong></li>
+</ol>
+<pre><code>server:
+  port: 16660
+  
+spring:
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/springboot_baseline?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=CONVERT_TO_NULL
+    username: root
+    password: 123
+
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    # 连接超时时间（毫秒）
+    timeout: 30000
+
+  thymeleaf:
+    cache: false
+    mode: HTML5
+    characterEncoding: UTF-8
+    servlet:
+      content-type: text/html
+    check-template: false
+    check-template-location: false
+</code></pre>
+<h2><a id="6_402"></a>6.注意事项</h2>
+<ol>
+<li>application.yml文件中的active配置，用于标识启用哪套配置文件，规则如下：<strong>spring.profiles.active</strong>属性值为<strong>xxx</strong>，则启用配置名为application-<strong>xxx</strong>.yml的配置文件；例如<strong>spring.profiles.active</strong>属性值为<strong>zwjk</strong>，则启用application-<strong>zwjk</strong>.yml配置文件。</li>
+<li>数据库配置中的<strong>spring.datasource.driverClassName</strong>属性值应该为<strong>com.mysql.cj.jdbc.Driver</strong>，而非<strong>com.mysql.jdbc.Driver</strong>；区别在于<strong>com.mysql.jdbc.Driver为mysql-connector-java 6.0以下版本</strong>使用，<strong>com.mysql.cj.jdbc.Driver为mysql-connector-java 6.0及以上版本</strong>使用，若mysql-connector-java 6.0版本为6.0以上但驱动仍使用com.mysql.jdbc.Driver，<strong>会出现报错提示</strong><code>Loading class 'com.mysql.jdbc.Driver'. This is deprecated. The new driver class is 'com.mysql.cj.jdbc.Driver'. The driver is automatically registered via the SPI and manual loading of the driver class is generally unnecessary.</code></li>
+</ol>
+<h1><a id="_407"></a>四.项目内部结构，分包规则</h1>
+<h2><a id="1_408"></a>1.数据储存层</h2>
+<p>①数据储存层其实就是我们所说的数据库，用于永久保存数据。</p>
+<p>②数据库中建立数据表示，需要注意相关的索引，外键等的建立，在建立数据表的时候就需要考虑到数据库的性能优化。</p>
+<p>③我这里建立一个user表来进行演示。建表语句如下：</p>
+<pre><code>CREATE TABLE `user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `hospital_id` int(11) NOT NULL DEFAULT '2109' COMMENT '医院id,用于区分多院区用户',
+  `hospital_user_id` int(11) DEFAULT NULL COMMENT '用户在对应医院下的id',
+  `login_name` varchar(32) NOT NULL COMMENT '登陆名',
+  `login_password` varchar(256) DEFAULT NULL COMMENT '登陆密码',
+  `real_name` varchar(16) DEFAULT NULL COMMENT '真实姓名，必填',
+  `id_card` varchar(32) DEFAULT NULL COMMENT '身份证号码',
+  `treatment_card_number` varchar(255) DEFAULT NULL COMMENT '就诊卡号',
+  `sex` char(1) DEFAULT NULL COMMENT '性别 1男 2女',
+  `phone` varchar(16) DEFAULT NULL COMMENT '手机号码',
+  `province` varchar(16) DEFAULT NULL COMMENT '所在省（市）',
+  `city` varchar(16) DEFAULT NULL COMMENT '所在城市',
+  `security_key` varchar(128) DEFAULT NULL COMMENT '密钥',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `last_login_time` datetime DEFAULT NULL COMMENT '最后登陆时间',
+  `birthday` varchar(16) DEFAULT NULL COMMENT '生日',
+  `login_times` int(11) DEFAULT '0' COMMENT '登陆次数',
+  `photo` varchar(64) DEFAULT NULL COMMENT '头像',
+  `address` varchar(64) DEFAULT NULL COMMENT '地址',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `medicare_type` char(2) DEFAULT NULL COMMENT '0:医保卡 1：普通就诊卡 2：无',
+  `black_list` char(1) DEFAULT '1' COMMENT '是否为黑名单，0是，1否',
+  `is_delete` char(1) DEFAULT '1' COMMENT ' 0：删除 1：未删除',
+  `wechat` varchar(128) DEFAULT NULL COMMENT '微信号',
+  `equipment_id` char(1) DEFAULT NULL COMMENT '注册设备。"1"APP,“2"微信',
+  `ali_user_id` varchar(128) DEFAULT NULL COMMENT '支付宝用户id',
+  `extend_params` varchar(256) DEFAULT NULL COMMENT '扩展字段',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `loginName` (`login_name`) USING HASH,
+  UNIQUE KEY `primaryKey` (`id`) USING BTREE,
+  UNIQUE KEY `openid` (`wechat`) USING BTREE,
+  UNIQUE KEY `aliuserid` (`ali_user_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+</code></pre>
+<h2><a id="2_450"></a>2.数据访问层</h2>
+<p>①.数据访问层基本就是我们说的model，mapper和service层了（一般来说，一些工具处理类也在该层，例如httpclient的请求工具，时间处理工具，字符串处理工具等）。</p>
+<p>②.相关的java类直接用mybatis-generator自动生成，生成完之后需要对相应的类进行修改以注入springboot项目中。</p>
+<p>③.命名规则：<br>
+包名前缀为com.ucmed，然后是所在项目层级，再是属于具体哪一类就加上类名，再到类名后加上具体的小分类，即<strong>com.ucmed.[项目层级].[类名].[类名细分1].[类名细分2].[类名细分n]…</strong>，例如，User为数据库表对应的实体类，我将它分类至bean类，那么该实体类所在的包名为<strong>com.ucmed.model.bean</strong>，mapper类包名为<strong>com.ucmed.model.mapper</strong>，service类包名为<strong>com.ucmed.model.service</strong>，这只是简单分了一下，如果你想继续往下细分也没问题。</p>
+<p>④.model类无需修改和特殊处理，复制即可。</p>
+<p>⑤.mapper文件处理：在生成的interface文件中，在类名上加上 <strong>@Mapper</strong>注解，这是属于<strong>org.apache.ibatis.annotations</strong>包中的一个类，只有加了该注解，才会被springboot识别为一个mapper类。</p>
+<p>⑥.service文件处理：在service类的<strong>实现类（注意，是实现类不是接口类）</strong> 中，类名上加上 <strong>@Service</strong>注解，这是属于<strong>org.springframework.stereotype</strong>包中的一个类，相关的mapper类定义时加上 <strong>@Autowired</strong>注解，即可将mapper类注入到service中。</p>
+<p>⑦.处理完之后的分层如下图所示：<br>
+<img src="https://img-blog.csdnimg.cn/20190124134841419.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2V2ZW5lcm8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>
+<img src="https://img-blog.csdnimg.cn/20190124135230194.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2V2ZW5lcm8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><img src="https://img-blog.csdnimg.cn/20190124135245515.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2V2ZW5lcm8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><img src="https://img-blog.csdnimg.cn/20190124135257294.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2V2ZW5lcm8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><img src="https://img-blog.csdnimg.cn/20190124135306424.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2V2ZW5lcm8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h2><a id="3_467"></a>3.业务逻辑层</h2>
+<p>①.这一层是放业务处理逻辑，对数据库数据的读取和处理，主要的业务逻辑的流程都在这一层进行处理，能在这层处理的逻辑尽量不要带至web展现层，导致web控制器类代码混乱。</p>
+<p>②.这一层的包命名和model层基本一致，实体类的命名我是以功能英文，再加上业务逻辑层的后缀拼接。例如用户注册功能，我命名为<strong>UserRegistApi</strong>，其中UserRegist就是用户注册的意思，Api则是后缀名。</p>
+<p>③.命名完成之后开始编写这个类，以用户注册业务为例，首先在类名上加上 <strong>@Component</strong>注解，该注解是<strong>org.springframework.stereotype.Component</strong>包中的类，用于在spring容器中注册这个类，交由spring进行管理，然后编写相关的方法和逻辑，代码如下：</p>
+<pre><code>package com.ucmed.api.user;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.ucmed.model.bean.User;
+import com.ucmed.model.service.UserService;
+import com.ucmed.model.utils.Constants;
+
+import net.sf.json.JSONObject;
+
+@Component
+public class UserRegistApi {
+	@Autowired
+	private UserService userService;
+	
+	public JSONObject execute(JSONObject params) {
+		JSONObject res = new JSONObject();
+		String resultCode = Constants.ERROR_CODE_FAIL; //成功代码
+		String resultInfo = "";
+		String userName = params.optString("phone");
+		String realName = params.optString("real_name");
+		String password = params.optString("password");
+		User user = new User();
+		user.setLoginName(userName);
+		user.setRealName(realName);
+		user.setLoginPassword(password);
+		int r = userService.insertSelective(user);
+		if(r&gt;0) {
+			resultCode = Constants.ERROR_CODE_SUCCESS;
+			resultInfo = Constants.SUCCESS_INFO_USER_REGIST;
+		}
+		res.put(Constants.EXEC_RESULT_CODE, resultCode);
+		res.put(Constants.EXEC_RESULT_INFO, resultInfo);
+		return res;
+	}
+}
+
+</code></pre>
+<h2><a id="4web_515"></a>4.web展现层</h2>
+<p>①.该层用于和页面进行交互，传递相关数据到前台页面进行展示以及收集前台页面的数据交由业务层进行逻辑处理。</p>
+<p>②.命名和之前业务层类似，仍然以用户注册为例，创建用户控制器<strong>com.ucmed.web.user.UserController</strong>，代码如下：</p>
+<pre><code>package com.ucmed.web.user;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.ucmed.api.user.UserRegistApi;
+import com.ucmed.model.utils.JsonUtils;
+
+import net.sf.json.JSONObject;
+
+@Controller
+@RequestMapping(value="/user")
+public class UserController {
+	@Autowired
+	private UserRegistApi userRegistApi;
+	
+	/**
+	 * 跳转至用户注册页面
+	 * @param request
+	 * @param response
+	 * @param map
+	 * @return
+	 */
+	@RequestMapping(value="/regist",method=RequestMethod.GET)
+	public String userRegist(HttpServletRequest request, HttpServletResponse response, ModelMap map) {
+		return "user/regist";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/regist",method=RequestMethod.POST)
+	public String userRegistPost(HttpServletRequest request, HttpServletResponse response, ModelMap map) {
+		JSONObject params = JsonUtils.parseRequestToJsonobject(request);
+		JSONObject res = userRegistApi.execute(params);
+		return res.toString();
+	}
+}
+</code></pre>
+<h2><a id="5_565"></a>5.页面文件</h2>
+<p>①.我的项目集成的前端页面框架是thymleaf框架，原生支持html5页面，因此页面文件的后缀直接是 <strong>.html</strong>，而不是.vm这种。</p>
+<p>②.springboot的.html页面文件默认放置路径为/src/main/resource/templates文件夹，在控制器中return的路径就是以<strong>该/src/main/resource/templates文件夹为根目录的相对文件路径</strong>；例如，若控制器需要跳转到该文件夹下的index.html文件，那么就是<code>return "index";</code>，若为/src/main/resource/templates/user/regist文件，那么控制器中的代码应为<code>return "user/regist";</code>。</p>
+<p>③.springboot的静态资源文件（.js，.css等）存放在/src/main/resource/static目录中，在html文件中导入静态资源时，路径也是<strong>以/src/main/resource/static文件夹为根目录的相对文件路径</strong>。</p>
+<p>④.以上两个文件夹均为springboot的默认文件夹，如果需要修改位置可以自行修改相应的属性配置。</p>
+<h1><a id="_574"></a>五.小结</h1>
+<p>到此基本上一个springboot的baseline项目搭建完成了，可以试运行一下，测试一下整个流程。</p>
+<h2><a id="1_577"></a>1.搭建完成后的项目结构：</h2>
+<p><img src="https://img-blog.csdnimg.cn/20190124180642631.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2V2ZW5lcm8=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h2><a id="2_579"></a>2.源码下载</h2>
+<p>源码附于附件，可下载参考。</p>
+</div>
+</body>
+
+</html>
