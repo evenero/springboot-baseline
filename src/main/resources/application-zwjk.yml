@@ -1,0 +1,29 @@
+server:
+  port: 16660
+
+spring:
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://192.168.0.10:3306/springboot_baseline?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8&zeroDateTimeBehavior=CONVERT_TO_NULL
+#    username: ucmed
+#    password: csyz1573@mysql
+    url: jdbc:mysql://127.0.0.1:3306/springboot_baseline?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8&zeroDateTimeBehavior=CONVERT_TO_NULL
+    username: test
+    password: test
+
+
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    # 连接超时时间（毫秒）
+    timeout: 30000
+
+  thymeleaf:
+    cache: false
+    mode: HTML5
+    characterEncoding: UTF-8
+    servlet:
+      content-type: text/html
+    check-template: false
+    check-template-location: false
+
